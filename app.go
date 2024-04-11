@@ -47,6 +47,7 @@ func (a *App) initializeRoutes() {
 	//custom added functionality
 	a.Router.HandleFunc("/products/names", a.getProductNames).Methods("GET")
 	a.Router.HandleFunc("/products/cheapest", a.getCheapestProduct).Methods("GET")
+	a.Router.HandleFunc("/products/most-expensive", a.getMostExpensiveProduct).Methods("GET")
 }
 
 func (a *App) getProduct(w http.ResponseWriter, r *http.Request) {
@@ -126,6 +127,21 @@ func (a *App) getCheapestProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	respondWithJSON(w, http.StatusOK, cheapestProduct)
+}
+
+func (a *App) getMostExpensiveProduct(w http.ResponseWriter, r *http.Request) {
+	var mostExpensive product
+	if err := mostExpensive.getMostExpensiveProduct(a.DB); err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			respondWithError(w, http.StatusNotFound, "No Products")
+		default:
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+		}
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, mostExpensive)
 }
 
 func (a *App) createProduct(w http.ResponseWriter, r *http.Request) {

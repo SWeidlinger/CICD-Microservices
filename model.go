@@ -90,3 +90,7 @@ func getProductNames(db *sql.DB) ([]string, error) {
 func (cheapest *product) getCheapestProduct(db *sql.DB) error {
 	return db.QueryRow("SELECT name, price, id FROM products WHERE price = (SELECT MIN(price) FROM products)").Scan(&cheapest.Name, &cheapest.Price, &cheapest.ID)
 }
+
+func (mostExpensive *product) getMostExpensiveProduct(db *sql.DB) error {
+	return db.QueryRow("SELECT name, price, id FROM products WHERE price = (SELECT MAX(price) FROM products)").Scan(&mostExpensive.Name, &mostExpensive.Price, &mostExpensive.ID)
+}
