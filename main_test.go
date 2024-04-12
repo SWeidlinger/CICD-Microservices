@@ -144,22 +144,6 @@ func TestDeleteProduct(t *testing.T) {
 	checkResponseCode(t, http.StatusNotFound, response.Code)
 }
 
-func TestGetProductNames(t *testing.T) {
-	addProducts(5)
-
-	req, _ := http.NewRequest("GET", "/products/names", nil)
-	response := executeRequest(req)
-	checkResponseCode(t, http.StatusOK, response.Code)
-}
-
-func TestGetCheapest(t *testing.T) {
-	addProducts(5)
-
-	req, _ := http.NewRequest("GET", "/products/cheapest", nil)
-	response := executeRequest(req)
-	checkResponseCode(t, http.StatusOK, response.Code)
-}
-
 func addProducts(count int) {
 	if count < 1 {
 		count = 1
@@ -201,3 +185,36 @@ const tableCreationQuery = `CREATE TABLE IF NOT EXISTS products
     price NUMERIC(10,2) NOT NULL DEFAULT 0.00,
     CONSTRAINT products_pkey PRIMARY KEY (id)
 )`
+
+// tests for added features
+func TestGetProductNames(t *testing.T) {
+	addProducts(5)
+
+	req, _ := http.NewRequest("GET", "/products/names", nil)
+	response := executeRequest(req)
+	checkResponseCode(t, http.StatusOK, response.Code)
+}
+
+func TestGetCheapestProduct(t *testing.T) {
+	addProducts(5)
+
+	req, _ := http.NewRequest("GET", "/products/cheapest", nil)
+	response := executeRequest(req)
+	checkResponseCode(t, http.StatusOK, response.Code)
+}
+
+func TestGetMostExpensiveProduct(t *testing.T) {
+	addProducts(5)
+
+	req, _ := http.NewRequest("GET", "/products/most-expensive", nil)
+	response := executeRequest(req)
+	checkResponseCode(t, http.StatusOK, response.Code)
+}
+
+func TestSearchProduct(t *testing.T) {
+	addProducts(5)
+
+	req, _ := http.NewRequest("GET", "/products/search/product", nil)
+	response := executeRequest(req)
+	checkResponseCode(t, http.StatusOK, response.Code)
+}

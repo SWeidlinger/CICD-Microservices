@@ -65,6 +65,7 @@ func getProducts(db *sql.DB, start, count int) ([]product, error) {
 	return products, nil
 }
 
+// added features
 func getProductNames(db *sql.DB) ([]string, error) {
 	rows, err := db.Query("SELECT name FROM products")
 
@@ -88,9 +89,33 @@ func getProductNames(db *sql.DB) ([]string, error) {
 }
 
 func (cheapest *product) getCheapestProduct(db *sql.DB) error {
-	return db.QueryRow("SELECT name, price, id FROM products WHERE price = (SELECT MIN(price) FROM products)").Scan(&cheapest.Name, &cheapest.Price, &cheapest.ID)
+	return db.QueryRow("SELECT name, price, id FROM products WHERE price = (SELECT MIN(price) FROM products)").
+		Scan(&cheapest.Name, &cheapest.Price, &cheapest.ID)
 }
 
 func (mostExpensive *product) getMostExpensiveProduct(db *sql.DB) error {
-	return db.QueryRow("SELECT name, price, id FROM products WHERE price = (SELECT MAX(price) FROM products)").Scan(&mostExpensive.Name, &mostExpensive.Price, &mostExpensive.ID)
+	return db.QueryRow("SELECT name, price, id FROM products WHERE price = (SELECT MAX(price) FROM products)").
+		Scan(&mostExpensive.Name, &mostExpensive.Price, &mostExpensive.ID)
+}
+
+func (p *product) searchProduct(db *sql.DB) ([]product, error) {
+	rows, err := db.Query("SELECT * FROM products WHERE name iLIKE '%" + p.Name + "%'")
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var products []product
+
+	for rows.Next() {
+		var p product
+		if err := rows.Scan(&p.ID, &p.Name, &p.Price); err != nil {
+			return nil, err
+		}
+		products = append(products, p)
+	}
+
+	return products, nil
 }

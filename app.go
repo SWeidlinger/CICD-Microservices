@@ -48,6 +48,7 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/products/names", a.getProductNames).Methods("GET")
 	a.Router.HandleFunc("/products/cheapest", a.getCheapestProduct).Methods("GET")
 	a.Router.HandleFunc("/products/most-expensive", a.getMostExpensiveProduct).Methods("GET")
+	a.Router.HandleFunc("/products/search/{name}", a.searchProduct).Methods("GET")
 }
 
 func (a *App) getProduct(w http.ResponseWriter, r *http.Request) {
@@ -102,46 +103,6 @@ func (a *App) getProducts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	respondWithJSON(w, http.StatusOK, products)
-}
-
-func (a *App) getProductNames(w http.ResponseWriter, r *http.Request) {
-	products, err := getProductNames(a.DB)
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	respondWithJSON(w, http.StatusOK, products)
-}
-
-func (a *App) getCheapestProduct(w http.ResponseWriter, r *http.Request) {
-	var cheapestProduct product
-	if err := cheapestProduct.getCheapestProduct(a.DB); err != nil {
-		switch {
-		case errors.Is(err, sql.ErrNoRows):
-			respondWithError(w, http.StatusNotFound, "No Products")
-		default:
-			respondWithError(w, http.StatusInternalServerError, err.Error())
-		}
-		return
-	}
-
-	respondWithJSON(w, http.StatusOK, cheapestProduct)
-}
-
-func (a *App) getMostExpensiveProduct(w http.ResponseWriter, r *http.Request) {
-	var mostExpensive product
-	if err := mostExpensive.getMostExpensiveProduct(a.DB); err != nil {
-		switch {
-		case errors.Is(err, sql.ErrNoRows):
-			respondWithError(w, http.StatusNotFound, "No Products")
-		default:
-			respondWithError(w, http.StatusInternalServerError, err.Error())
-		}
-		return
-	}
-
-	respondWithJSON(w, http.StatusOK, mostExpensive)
 }
 
 func (a *App) createProduct(w http.ResponseWriter, r *http.Request) {
@@ -201,4 +162,58 @@ func (a *App) deleteProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	respondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
+}
+
+// added features
+func (a *App) getProductNames(w http.ResponseWriter, r *http.Request) {
+	products, err := getProductNames(a.DB)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, products)
+}
+
+func (a *App) getCheapestProduct(w http.ResponseWriter, r *http.Request) {
+	var cheapestProduct product
+	if err := cheapestProduct.getCheapestProduct(a.DB); err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			respondWithError(w, http.StatusNotFound, "No Products")
+		default:
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+		}
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, cheapestProduct)
+}
+
+func (a *App) getMostExpensiveProduct(w http.ResponseWriter, r *http.Request) {
+	var mostExpensive product
+	if err := mostExpensive.getMostExpensiveProduct(a.DB); err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			respondWithError(w, http.StatusNotFound, "No Products")
+		default:
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+		}
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, mostExpensive)
+}
+
+func (a *App) searchProduct(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	p := product{Name: vars["name"]}
+	products, err := p.searchProduct(a.DB)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, products)
 }
