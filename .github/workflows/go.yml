@@ -70,4 +70,4 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
-        tags: sweidlinger/cicd-microservices:latest sweidlinger/cicd-microservices:${{ github.sha }}
+        tags: sweidlinger/cicd-microservices:latest , sweidlinger/cicd-microservices:${{ github.sha }}
