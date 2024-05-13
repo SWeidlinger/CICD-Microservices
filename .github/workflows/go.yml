@@ -36,6 +36,14 @@ jobs:
     - name: Test
       run: go test -v ./...
 
+    - name: Build and push
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./Dockerfile
+        push: true
+        tag: sweidlinger/cicd-microservices
+
   sonarCloud:
     needs: build
     name: Code Analysis (SonarCloud)
