@@ -48,7 +48,7 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
-        tag: sweidlinger/cicd-microservices
+        tags: sweidlinger/cicd-microservices
 
   sonarCloud:
     needs: build
