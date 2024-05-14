@@ -53,7 +53,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   dockerhub_deploy:
-    needs: vulnerability_scan
+    needs: sonarcloud
     name: Build and Deploy to Dockerhub
     runs-on: ubuntu-latest
 
