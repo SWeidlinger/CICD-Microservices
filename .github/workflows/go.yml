@@ -59,7 +59,7 @@ jobs:
 
     steps:
     - name: Build Docker Image
-      uses: docker build -t sweidliner/cicd-microservices:latest
+      uses: docker build -t sweidlinger/cicd-microservices:latest
 
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
