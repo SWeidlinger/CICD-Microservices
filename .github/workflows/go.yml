@@ -58,10 +58,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Build Docker Image
+      uses: docker build -t sweidliner/cicd-microservices:latest
+
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
       with:
-        image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
+        image-ref: 'sweidlinger/cicd-microservices:latest'
         format: 'sarif'
         output: 'trivy-results.sarif'
 
@@ -71,7 +74,7 @@ jobs:
         sarif_file: 'trivy-results.sarif'
 
   dockerhub_deploy:
-    needs: sonarcloud
+    needs: vulnerability_scan
     name: Build and Deploy to Dockerhub
     runs-on: ubuntu-latest
 
