@@ -90,6 +90,21 @@ jobs:
     - name: Build and push
       uses: docker/build-push-action@v5
       with:
+        push: false
+        tags: sweidlinger/cicd-microservices:latest
+
+    - name: Execute trivy
+      uses: aquasecurity/trivy-action@master
+      with:
+          image-ref: 'sweidlinger/cicd-microservices:latest'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+    - name: Push to Dockerhub
+      uses: docker/build-push-action@v5
+      with:
         context: .
         file: ./Dockerfile
         push: true
